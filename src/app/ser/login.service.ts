@@ -30,6 +30,19 @@ export class LoginService {
   isLoggedIn(): boolean {
     return this.loggedIn || !!localStorage.getItem('token');
   }
+  forgotPassword(mail: string): Observable<string> {
+    const body = { mail };
+    return this.http.post<{ message: string }>(this.apiUrl + '/forgot-password', body, { headers: this.headers })
+      .pipe(map(res => res.message));
+}
+
+
+  // 🔹 Réinitialiser le mot de passe (même syntaxe que login)
+  resetPassword(token: string, newPassword: string): Observable<string> {
+    const body = { token, newPassword };
+    return this.http.post<{ message: string }>(this.apiUrl + '/reset-password', body, { headers: this.headers })
+      .pipe(map(res => res.message));
+  }
   
 
 
