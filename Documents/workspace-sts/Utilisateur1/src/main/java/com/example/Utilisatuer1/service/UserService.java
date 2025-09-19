@@ -35,6 +35,10 @@ public class UserService {
         user.setNumTelephone(userDetails.getNumTelephone());
         return userRepository.save(user);
     }
+    public Optional<User> findByMail(String mail) {
+        return userRepository.findByMail(mail);
+    }
+
 
     // Supprimer un utilisateur
     public void deleteUser(Long id) {
