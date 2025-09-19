@@ -41,4 +41,5 @@ export class UserService {
   searchUsersFlexible(keyword: string): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl + '/search/flexible?keyword=' + encodeURIComponent(keyword), { headers: this.headers });
   }
+  
 }

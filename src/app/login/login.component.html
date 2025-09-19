@@ -1,0 +1,23 @@
+<div class="container mt-5" style="max-width: 400px;">
+  <h2 class="text-center mb-4">Connexion</h2>
+
+  <!-- Message succès ou erreur -->
+  <div *ngIf="message" class="alert alert-info text-center">
+    {{ message }}
+  </div>
+
+  <form (ngSubmit)="login()">
+
+    <div class="form-group mb-3">
+      <label for="mail">Email</label>
+      <input type="email" id="mail" class="form-control" [(ngModel)]="mail" name="mail" placeholder="Entrez votre email" required>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="password">Mot de passe</label>
+      <input type="password" id="password" class="form-control" [(ngModel)]="password" name="password" placeholder="Entrez votre mot de passe" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+  </form>
+</div>

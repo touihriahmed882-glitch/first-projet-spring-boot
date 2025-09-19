@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../ser/user.service';
+import { LoginService } from '../../ser/login.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-user',
@@ -21,7 +24,11 @@ newUser: any = {
 };  message: string = '';
   searchKeyword: string | undefined;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService,
+        private loginService: LoginService,
+    private router: Router
+
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -118,5 +125,9 @@ newUser: any = {
   cancelEdit(): void {
     this.selectedUser = {};
     this.message = '';
+  }
+  logout() {
+    this.loginService.logout();
+    this.router.navigate(['/login']); // redirection vers login
   }
 }
