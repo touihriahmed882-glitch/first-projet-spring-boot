@@ -17,6 +17,10 @@ public class UserService {
     public User addUser(User user) {
         return userRepository.save(user);
     }
+    public Optional<User> authenticate(String mail, String password) {
+        return userRepository.findByMailAndPassword(mail, password);
+    }
+
 
     // Modifier un utilisateur
     public User updateUser(Long id, User userDetails) {

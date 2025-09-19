@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Recherche exacte nom et prénom
 	Optional<User> findByNomIgnoreCaseAndPrenomIgnoreCase(String nom, String prenom);
+	Optional<User> findByMailAndPassword(String mail, String password);
+
 
 
     // JpaRepository fournit déjà toutes les opérations CRUD de base :

@@ -1,11 +1,15 @@
 package com.example.Utilisatuer1.controller;
+import com.example.Utilisatuer1.dto.LoginRequest;
+import com.example.Utilisatuer1.service.UserService;
 import com.example.Utilisatuer1.entity.User;
 import com.example.Utilisatuer1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,6 +37,24 @@ public class UserController {
     public Optional<User> searchUsersFlexible(@RequestParam("keyword") String keyword) {
         return userService.searchUsersFlexible(keyword);
     }
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
+        return userService.authenticate(loginRequest.getMail(), loginRequest.getPassword())
+                .map(user -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("message", "✅ Connexion réussie");
+                    return ResponseEntity.ok(response);
+                })
+                .orElseGet(() -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("message", "❌ Email ou mot de passe incorrect");
+                    return ResponseEntity.status(401).body(response);
+                });
+    }
+
+
+
+ 
 
 
 
