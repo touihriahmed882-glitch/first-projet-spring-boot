@@ -1,6 +1,7 @@
 package com.example.Utilisatuer1.controller;
 
 import com.example.Utilisatuer1.entity.PasswordResetToken;
+import com.example.Utilisatuer1.entity.ResetPasswordRequest;
 import com.example.Utilisatuer1.entity.User;
 import com.example.Utilisatuer1.repository.PasswordResetTokenRepository;
 import com.example.Utilisatuer1.service.EmailService;
@@ -40,7 +41,7 @@ public class PasswordController {
             resetToken.setExpiryDate(LocalDateTime.now().plusHours(1)); // valable 1h
             tokenRepository.save(resetToken);
 
-            emailService.sendPasswordResetMail(user, token);
+            emailService.sendPasswordResetMail(user.getMail(), token);
 
             return ResponseEntity.ok("Email de réinitialisation envoyé !");
         } else {
@@ -50,11 +51,18 @@ public class PasswordController {
 
     // 🔹 Réinitialiser le mot de passe
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        String token = request.getToken();
+        String newPassword = request.getNewPassword();
+
+        if (token == null || newPassword == null) {
+            return ResponseEntity.badRequest().body("Champs manquants !");
+        }
+
         Optional<PasswordResetToken> tokenOpt = tokenRepository.findByToken(token);
-        if(tokenOpt.isPresent() && tokenOpt.get().getExpiryDate().isAfter(LocalDateTime.now())) {
+        if (tokenOpt.isPresent() && tokenOpt.get().getExpiryDate().isAfter(LocalDateTime.now())) {
             User user = tokenOpt.get().getUser();
-            user.setPassword(newPassword);
+            user.setPassword(newPassword); // ⚠️ encoder avec BCrypt
             userService.updateUser(user.getId(), user);
 
             return ResponseEntity.ok("Mot de passe mis à jour !");
@@ -62,4 +70,6 @@ public class PasswordController {
             return ResponseEntity.status(400).body("Token invalide ou expiré");
         }
     }
+
+
 }

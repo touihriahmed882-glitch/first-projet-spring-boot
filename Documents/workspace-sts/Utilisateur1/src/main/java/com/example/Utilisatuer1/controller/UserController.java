@@ -52,7 +52,7 @@ public class UserController {
                 return ResponseEntity.ok(response);
             } else {
                 try {
-                    boolean mailSent = emailService.sendPasswordResetMail(user, user.getMail());
+                    boolean mailSent = emailService.sendPasswordResetMail(user.getMail(), null);
                     if (mailSent) {
                         response.put("message", "❌ Mot de passe incorrect - Un email de réinitialisation a été envoyé");
                     } else {

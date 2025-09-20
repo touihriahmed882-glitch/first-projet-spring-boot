@@ -12,22 +12,23 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public boolean sendPasswordResetMail(String toEmail) {
+    public boolean sendPasswordResetMail(String recipient, String token) {
         try {
-            // Supprimer les espaces autour de l'email
-            String recipient = toEmail.trim();
+            String resetUrl = "http://localhost:4200/forgot-password?token=" + token;
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(recipient);
-            message.setSubject("🔑 Mot de passe incorrect - Réinitialisation");
-            message.setText("Bonjour,\n\nVous avez tenté de vous connecter avec un mot de passe incorrect. " +
-                    "Si vous avez oublié votre mot de passe, veuillez cliquer sur ce lien pour le réinitialiser : " +
-                    "http://localhost:4200/reset-password\n\nMerci.");
+            message.setSubject("🔑 Réinitialisation de mot de passe");
+            message.setText("Bonjour,\n\nCliquez sur ce lien pour réinitialiser votre mot de passe :\n"
+                    + resetUrl +
+                    "\n\n⚠️ Ce lien est valable 1 heure.");
+
             mailSender.send(message);
             return true;
         } catch (MailException e) {
-            e.printStackTrace(); // Affiche l'erreur SMTP complète
+            e.printStackTrace();
             return false;
         }
     }
+
 }
