@@ -1,8 +1,8 @@
 package com.example.Utilisatuer1.controller;
 import com.example.Utilisatuer1.dto.LoginRequest;
+import com.example.Utilisatuer1.service.EmailService;
 import com.example.Utilisatuer1.service.UserService;
 import com.example.Utilisatuer1.entity.User;
-import com.example.Utilisatuer1.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private EmailService emailService; // 🔹 Injection ici
+
 
     // Ajouter un utilisateur
     @PostMapping
@@ -39,22 +42,33 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest) {
-        return userService.authenticate(loginRequest.getMail(), loginRequest.getPassword())
-                .map(user -> {
-                    Map<String, String> response = new HashMap<>();
-                    response.put("message", "✅ Connexion réussie");
-                    return ResponseEntity.ok(response);
-                })
-                .orElseGet(() -> {
-                    Map<String, String> response = new HashMap<>();
-                    response.put("message", "❌ Email ou mot de passe incorrect");
-                    return ResponseEntity.status(401).body(response);
-                });
+        Optional<User> userOpt = userService.findByMail(loginRequest.getMail());
+        Map<String, String> response = new HashMap<>();
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getPassword().equals(loginRequest.getPassword())) {
+                response.put("message", "✅ Connexion réussie");
+                return ResponseEntity.ok(response);
+            } else {
+                try {
+                    boolean mailSent = emailService.sendPasswordResetMail(user, user.getMail());
+                    if (mailSent) {
+                        response.put("message", "❌ Mot de passe incorrect - Un email de réinitialisation a été envoyé");
+                    } else {
+                        response.put("message", "❌ Mot de passe incorrect - Impossible d’envoyer l’email de réinitialisation");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // Affiche toute exception inattendue
+                    response.put("message", "❌ Mot de passe incorrect - Impossible d’envoyer l’email de réinitialisation");
+                }
+                return ResponseEntity.status(401).body(response);
+            }
+        } else {
+            response.put("message", "❌ Email ou mot de passe incorrect");
+            return ResponseEntity.status(401).body(response);
+        }
     }
-
-
-
- 
 
 
 
@@ -77,6 +91,8 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+  
+
 
     // Récupérer un utilisateur par ID
     @GetMapping("/{id}")

@@ -16,6 +16,8 @@ public class User {
     private String mail;
     private String password;
     private String adresse;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PasswordResetToken passwordResetToken;
 
     @Column(name = "num_telephone")
     private String numTelephone;
