@@ -38,11 +38,15 @@ export class LoginService {
 
 
   // 🔹 Réinitialiser le mot de passe (même syntaxe que login)
-  resetPassword(token: string, newPassword: string): Observable<string> {
-    const body = { token, newPassword };
-    return this.http.post<{ message: string }>(this.apiUrl + '/reset-password', body, { headers: this.headers })
-      .pipe(map(res => res.message));
-  }
+resetPassword(token: string, newPassword: string): Observable<string> {
+  return this.http.post<{ message: string }>(
+    this.apiUrl + '/reset-password',
+    { token, newPassword }, // ✅ body JSON
+    { headers: this.headers } // ✅ important
+  ).pipe(map(res => res.message));
+}
+
+
   
 
 
